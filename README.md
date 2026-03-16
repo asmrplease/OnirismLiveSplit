@@ -1,3 +1,3 @@
-Uses https://github.com/TheTedder/LiveSplitInterop to start runs when a new game starts, pause the timer while a level is loading, and automatically split when the level changes. 
+Uses https://github.com/TheTedder/LiveSplitInterop to start runs when a new game starts. 
 
-Includes a 'final' split when the "Under Construction" dialogue box appears in the Al-Hibdae docks. 
+Includes configuration options for when to perform splits, and when to pause the timer. Implementation of these options may change, which will affect splits. 
