@@ -15,7 +15,7 @@ public class LiveSplitManager : IDisposable
     public static event Action<SplitEventArgs>? OnSplitOccurred;
     public static event Action? OnRunStarted;
 
-    static Dictionary<GameEvent, TimeSpan> completedEvents = [];
+    static Dictionary<GameEvent, TimeSpan?> completedEvents = [];
 
     public LiveSplitManager()
     {
@@ -51,7 +51,8 @@ public class LiveSplitManager : IDisposable
         //if (!eventWhitelist.TryGetValue(eventName, out _)) { Log.Debug($"Event {eventName} is not in whitelist."); return; }
 
         TrySplit();
-        if (client.GetLastSplitTime() is not TimeSpan split) { Log.Error("Failed to get Delta"); return; }
+        var split = client.GetLastSplitTime();
+        if (split is not TimeSpan) { Log.Warning("Failed to get Delta");}
         completedEvents.Add(gameEvent, split);
     }
 
