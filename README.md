@@ -38,7 +38,10 @@ Uses https://github.com/TheTedder/LiveSplitInterop.
 		- All occurrances of this event will autosplit.
 		- This will cause repeat splits when respawning or backtracking.
 - Recommendations:
-	- 
+	- Unique Scene Load is a good starting point.
+	- Enabling Unique Cutscenes, Game Events, and/or Julie Calls will provide more granular splits.
+	- Sector Activators are probably the most detailed, but weren't meant to be player-facing, and may not result in consistent splits.
+	- You probably shouldn't use Item Collection splits right now.
 ## Autopause Configuration
 - By default, only pausing on scene loading is enabled. This helps mitigate variances between different PC hardware.  
 - Pausing while cutscenes are playing can be enabled. IDK if this would be considered legal for leaderboards, but might be nice if you want to enjoy cutscenes while running.
