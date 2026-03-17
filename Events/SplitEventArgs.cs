@@ -1,27 +1,18 @@
 ﻿using System;
 
 namespace OnirismLiveSplit.Events;
-public class SplitEventArgs
+public record SplitEventArgs(
+    string SplitName,
+    TimeSpan OverallTime,
+    TimeSpan CurrentSplit,
+    TimeSpan? Delta,
+    TimeSpan? BestPossibleTime)
 {
-    public string SplitName;
-    public TimeSpan OverallTime;
-    public TimeSpan CurrentSplit;
-    public TimeSpan Delta;
-    public TimeSpan BestPossibleTime;
-
-    public SplitEventArgs(
-        string SplitName, 
-        TimeSpan OverallTime, 
-        TimeSpan CurrentSplit, 
-        TimeSpan Delta,
-        TimeSpan BestPossibleTime)
-    {
-        this.SplitName = SplitName;
-        this.OverallTime = OverallTime;
-        this.CurrentSplit = CurrentSplit;
-        this.Delta = Delta;
-        this.BestPossibleTime = BestPossibleTime;
-    }
+    public string SplitName = SplitName;
+    public TimeSpan OverallTime = OverallTime;
+    public TimeSpan CurrentSplit = CurrentSplit;
+    public TimeSpan? Delta = Delta;
+    public TimeSpan? BestPossibleTime = BestPossibleTime;
 
     public override string ToString()
     {

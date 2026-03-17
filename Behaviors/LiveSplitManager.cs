@@ -47,7 +47,6 @@ public class LiveSplitManager : IDisposable
         var mode = SplitOn.GetModeForType(gameEvent.type);
         if (mode == RepeatMode.Never) { Log.Debug($"{gameEvent} is configured to not trigger a split."); return; }
         if (mode == RepeatMode.Unique && completedEvents.ContainsKey(gameEvent)) { Log.Info($"Event {gameEvent} has already occurred"); return; }
-
         //if (!eventWhitelist.TryGetValue(eventName, out _)) { Log.Debug($"Event {eventName} is not in whitelist."); return; }
 
         TrySplit();
@@ -82,14 +81,16 @@ public class LiveSplitManager : IDisposable
         }
 
         TimeSpan diff = (TimeSpan)(now - lastSplit);
-        Log.Info($"now: {now}, diff: {diff}");
+        //Log.Info($"now: {now}, diff: {diff}");
         if (diff <= cooldown) { Log.Info("split time was too close to previous split"); return; }
 
         string splitName = client.GetCurrentSplitName();
         client.Split();
         lastSplit = now;
-        if (client.GetDelta() is not TimeSpan delta) { Log.Error("Failed to get Delta"); return; }
-        if (client.GetBestPossibleTime() is not TimeSpan bestPossible) { Log.Error("Failed to get best possible time"); return; }
+        var delta = client.GetDelta();
+        var bestPossible = client.GetBestPossibleTime();
+        if (delta is not TimeSpan) { Log.Warning("Failed to get Delta"); }
+        if (bestPossible is not TimeSpan) { Log.Warning("Failed to get best possible time"); }
 
         OnSplitOccurred?.Invoke(new SplitEventArgs(splitName, now, diff, delta, bestPossible));
     }

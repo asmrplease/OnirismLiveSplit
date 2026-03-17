@@ -11,6 +11,7 @@ public class SplitOn
     static ConfigEntry<RepeatMode>? CutscenesConfig;
     static ConfigEntry<RepeatMode>? ItemCollectConfig;
     static ConfigEntry<RepeatMode>? JulieCallConfig;
+    static ConfigEntry<RepeatMode>? GameEventSaved;
     //public static bool UseWhitelist = false;
     //public static bool UseBlacklist = false;
 
@@ -21,6 +22,7 @@ public class SplitOn
         CutscenesConfig         = config.Bind(SectionName, "Split on Cutscenes",    RepeatMode.Never, "Performs a split automatically when a cutsene starts.");
         ItemCollectConfig       = config.Bind(SectionName, "Split on Item Collect", RepeatMode.Never, "Performs a split automatically when an item is picked up.");
         JulieCallConfig         = config.Bind(SectionName, "Split on Julie Calls",  RepeatMode.Never, "Performs a split automatically when a Julie phonecall starts.");
+        GameEventSaved          = config.Bind(SectionName, "Split on Game Events", RepeatMode.Never, "Performs a split automatically when any game event is added to the save file.");
     }
 
     public static RepeatMode GetModeForType(EventType eventType)
@@ -32,6 +34,7 @@ public class SplitOn
             EventType.Cutscene          => CutscenesConfig?.Value       ?? RepeatMode.Never,
             EventType.ItemCollection    => ItemCollectConfig?.Value     ?? RepeatMode.Never,
             EventType.JulieCall         => JulieCallConfig?.Value       ?? RepeatMode.Never,
+            EventType.GameEventSaved    => GameEventSaved?.Value        ?? RepeatMode.Never,
             _                           => RepeatMode.Never,
         };
     }

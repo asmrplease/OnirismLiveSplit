@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using OnirismLiveSplit.Events;
 
 namespace OnirismLiveSplit.Hooks;
 
@@ -9,7 +10,7 @@ public static class PhoneTriggerWatcher
     [HarmonyPrefix]
     public static void Prefix(PhoneTrigger __instance)
     {
-        GameEvents.NotifyEvent(new(Events.EventType.JulieCall, __instance.dialogueName));
+        GameEvents.NotifyEvent(new(EventType.JulieCall, __instance.dialogueName));
     }
 }
 
@@ -41,8 +42,15 @@ public static class NPCTogglePatch
 public static class PickupPatch
 {
     [HarmonyPrefix]
-    public static void Prefix(pickup __instance)
-    {
-        GameEvents.NotifyEvent(new(Events.EventType.ItemCollection, __instance.name));
-    }
+    public static void Prefix(pickup __instance) { GameEvents.NotifyEvent(new(EventType.ItemCollection, __instance.name)); }
+}
+
+/// <summary>
+/// WIP- Intended to trigger a split when a new Raggs Shop is added to the save file
+/// </summary>
+[HarmonyPatch(typeof(SaveManager), nameof(SaveManager.AddEvent))]
+public static class ShopPatch
+{
+    [HarmonyPrefix]
+    public static void Prefix(string eventName) { GameEvents.NotifyEvent(new(EventType.GameEventSaved, eventName)); }
 }
