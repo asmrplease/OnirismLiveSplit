@@ -2,12 +2,14 @@
 
 namespace OnirismLiveSplit.Events;
 public record SplitEventArgs(
+    GameEvent GameEvent,
     string SplitName,
     TimeSpan OverallTime,
     TimeSpan CurrentSplit,
     TimeSpan? Delta,
     TimeSpan? BestPossibleTime)
 {
+    public GameEvent GameEvent = GameEvent;
     public string SplitName = SplitName;
     public TimeSpan OverallTime = OverallTime;
     public TimeSpan CurrentSplit = CurrentSplit;
@@ -16,6 +18,6 @@ public record SplitEventArgs(
 
     public override string ToString()
     {
-        return $"{SplitName}: Overall- {OverallTime}, Current- {CurrentSplit}, Delta- {Delta}, Best Possible: {BestPossibleTime}.";
+        return $"{GameEvent}-{SplitName}: Overall- {OverallTime}, Current- {CurrentSplit}, Delta- {Delta}, Best Possible: {BestPossibleTime}.";
     }
 }

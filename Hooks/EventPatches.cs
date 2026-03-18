@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using OnirismLiveSplit.Events;
+using System;
 
 namespace OnirismLiveSplit.Hooks;
 
@@ -48,9 +49,14 @@ public static class PickupPatch
 /// <summary>
 /// WIP- Intended to trigger a split when a new Raggs Shop is added to the save file
 /// </summary>
-[HarmonyPatch(typeof(SaveManager), nameof(SaveManager.AddEvent))]
+[HarmonyPatch(typeof(SaveManager), nameof(SaveManager.AddEvent), [typeof(SaveData), typeof(string)])]
 public static class ShopPatch
 {
     [HarmonyPrefix]
-    public static void Prefix(string eventName) { GameEvents.NotifyEvent(new(EventType.GameEventSaved, eventName)); }
+    public static void Prefix(string eventName) 
+    {
+        if (eventName.EndsWith(')')) return;
+
+        GameEvents.NotifyEvent(new(EventType.GameEventSaved, eventName)); 
+    }
 }

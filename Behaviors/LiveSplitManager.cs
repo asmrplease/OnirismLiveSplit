@@ -1,4 +1,5 @@
-﻿using LiveSplitInterop.Clients;
+﻿using BepInEx;
+using LiveSplitInterop.Clients;
 using LiveSplitInterop.Commands;
 using OnirismLiveSplit.Events;
 using OnirismLiveSplit.Hooks;
@@ -44,15 +45,36 @@ public class LiveSplitManager : IDisposable
 
     void HandleEvent(GameEvent gameEvent)
     {
+        var now = client.GetCurrentTime();
+        if (this.lastSplit is null)
+        {
+            client.Split();
+            this.lastSplit = now;
+            return;
+        }
+
         var mode = SplitOn.GetModeForType(gameEvent.type);
         if (mode == RepeatMode.Never) { Log.Debug($"{gameEvent} is configured to not trigger a split."); return; }
         if (mode == RepeatMode.Unique && completedEvents.ContainsKey(gameEvent)) { Log.Info($"Event {gameEvent} has already occurred"); return; }
-        //if (!eventWhitelist.TryGetValue(eventName, out _)) { Log.Debug($"Event {eventName} is not in whitelist."); return; }
+        
+        TimeSpan diff = (TimeSpan)(now - this.lastSplit);
+        if (diff <= cooldown) { Log.Info("split time was too close to previous split"); return; }
 
-        TrySplit();
-        var split = client.GetLastSplitTime();
-        if (split is not TimeSpan) { Log.Warning("Failed to get Delta");}
-        completedEvents.Add(gameEvent, split);
+        if (gameEvent.name.IsNullOrWhiteSpace()) { Log.Warning("gameevent with no name");return; }
+        string liveSplitName = client.GetCurrentSplitName();
+        Log.Debug($"{liveSplitName}/{gameEvent.name}");
+        if (!liveSplitName.Contains(gameEvent.name)) { Log.Info($"GameEvent {gameEvent.name} was not expected event {liveSplitName}"); return; }
+
+        client.Split();
+        this.lastSplit = now;
+        var delta = client.GetDelta();
+        var bestPossible = client.GetBestPossibleTime();
+        var lastSplit = client.GetLastSplitTime();
+        if (delta is not TimeSpan) { Log.Warning("Failed to get Delta"); }
+        if (bestPossible is not TimeSpan) { Log.Warning("Failed to get best possible time"); }
+        if (lastSplit is not TimeSpan) { Log.Warning("Failed to get Delta"); }
+        completedEvents.Add(gameEvent, lastSplit);
+        OnSplitOccurred?.Invoke(new SplitEventArgs(gameEvent, liveSplitName, now, diff, delta, bestPossible));
     }
 
     void DebugStartedHandler()
@@ -62,38 +84,12 @@ public class LiveSplitManager : IDisposable
 
     void DebugSplitHandler(SplitEventArgs obj)
     {
-        Log.Debug($"Split occurred event {obj.ToString()}");
+        Log.Error($"Split occurred event {obj.ToString()}");
     }
 
-    static int cooldownSeconds = 5;
+    static int cooldownSeconds = 1;
     static TimeSpan cooldown = new(0, 0, cooldownSeconds);
     TimeSpan? lastSplit;
-
-    void TrySplit()
-    {
-        Log.Info("Split");
-        var now = client.GetCurrentTime();
-        if (lastSplit is null)
-        {
-            client.Split();
-            lastSplit = now;
-            return;
-        }
-
-        TimeSpan diff = (TimeSpan)(now - lastSplit);
-        //Log.Info($"now: {now}, diff: {diff}");
-        if (diff <= cooldown) { Log.Info("split time was too close to previous split"); return; }
-
-        string splitName = client.GetCurrentSplitName();
-        client.Split();
-        lastSplit = now;
-        var delta = client.GetDelta();
-        var bestPossible = client.GetBestPossibleTime();
-        if (delta is not TimeSpan) { Log.Warning("Failed to get Delta"); }
-        if (bestPossible is not TimeSpan) { Log.Warning("Failed to get best possible time"); }
-
-        OnSplitOccurred?.Invoke(new SplitEventArgs(splitName, now, diff, delta, bestPossible));
-    }
 
     void HandleCutsceneStart(Cutscene _)
     {
