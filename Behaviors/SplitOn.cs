@@ -12,11 +12,14 @@ public class SplitOn
     static ConfigEntry<RepeatMode>? ItemCollectConfig;
     static ConfigEntry<RepeatMode>? JulieCallConfig;
     static ConfigEntry<RepeatMode>? GameEventSaved;
+    static ConfigEntry<bool>? StrictSplitConfig;
+    public static bool StrictSplits => StrictSplitConfig?.Value ?? false;
     //public static bool UseWhitelist = false;
     //public static bool UseBlacklist = false;
 
     public SplitOn(ConfigFile config)
     {
+        StrictSplitConfig       = config.Bind(SectionName, "Strict Split Events", false, "Only performs a split if the event string matches the name of the next LiveSplit split.");
         SceneLoadConfig         = config.Bind(SectionName, "Split on Scene Load",   RepeatMode.Never, "Performs a split automatically when a scene has loaded.");
         SectorActivatorConfig   = config.Bind(SectionName, "Split on Sector Activators", RepeatMode.Never, "Performs a split automatically when a sector activator is triggered.");
         CutscenesConfig         = config.Bind(SectionName, "Split on Cutscenes",    RepeatMode.Never, "Performs a split automatically when a cutsene starts.");

@@ -63,7 +63,7 @@ public class LiveSplitManager : IDisposable
         if (gameEvent.name.IsNullOrWhiteSpace()) { Log.Warning("gameevent with no name");return; }
         string liveSplitName = client.GetCurrentSplitName();
         Log.Debug($"{liveSplitName}/{gameEvent.name}");
-        if (!liveSplitName.Contains(gameEvent.name)) { Log.Info($"GameEvent {gameEvent.name} was not expected event {liveSplitName}"); return; }
+        if (SplitOn.StrictSplits && !liveSplitName.Contains(gameEvent.name)) { Log.Info($"GameEvent {gameEvent.name} was not expected event {liveSplitName}"); return; }
 
         client.Split();
         this.lastSplit = now;
