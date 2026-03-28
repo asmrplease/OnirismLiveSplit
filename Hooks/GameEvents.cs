@@ -37,11 +37,17 @@ public class GameEvents : IDisposable
 
     public static void NotifyExit(string sceneName) 
     {
-        OnEvent?.Invoke(new (EventType.SceneLoad, sceneName));
+        Log.Info($"Scene exit: {sceneName}");
+        try { OnEvent?.Invoke(new(EventType.SceneLoad, sceneName)); }
+        catch (Exception e) { Log.Error(e.Message); }
         OnSceneExit?.Invoke(sceneName);
-    } 
+    }
 
-    public static void NotifyEvent(GameEvent gameEvent) => OnEvent?.Invoke(gameEvent);
+    public static void NotifyEvent(GameEvent gameEvent) 
+    {
+        try { OnEvent?.Invoke(gameEvent); }
+        catch (Exception e) { Log.Error(e.Message); }
+    } 
 
     public static void NotifyLoadComplete(string sceneName) => OnLoadComplete?.Invoke(sceneName);
 

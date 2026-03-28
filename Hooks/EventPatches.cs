@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
+using Onirism;
 using OnirismLiveSplit.Events;
-using System;
 
 namespace OnirismLiveSplit.Hooks;
 
@@ -15,10 +15,10 @@ public static class PhoneTriggerWatcher
     }
 }
 
-[HarmonyPatch(typeof(GameManager), nameof(GameManager.LoadScene))]
+[HarmonyPatch(typeof(SceneLoaderSvc), nameof(SceneLoaderSvc.LoadScene), [typeof(SceneConfig), typeof(SaveData)])]
 public static class SceneSwitchPatch
 {
-    [HarmonyPrefix] public static void Prefix(string sceneName) => GameEvents.NotifyExit(sceneName);
+    [HarmonyPrefix] public static void Prefix(SceneConfig sceneConfig) => GameEvents.NotifyExit(sceneConfig.sceneName);
 }
 
 /// <summary>
