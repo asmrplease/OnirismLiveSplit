@@ -44,11 +44,26 @@ public class LiveSplitManager : IDisposable
 
     void HandleEvent(GameEvent gameEvent)
     {
+        Log.Debug($"HandleEvent({gameEvent}");
         //if (this.lastSplit is null) { Log.Error("last split time is in an invalid state."); return; }
         if (gameEvent.name.IsNullOrWhiteSpace()) { Log.Warning("gameevent with no name"); return; }
         if (gameEvent.name == "Cutscene_intro_start") { NewRun(); return; }
 
-        string liveSplitName = client.GetCurrentSplitName();
+        Log.Debug("Trying to split...");
+        string liveSplitName = "";
+        try 
+        {
+            Log.Debug("Trying to get current split name...");
+            liveSplitName = SplitOn.StrictSplits ? client.GetCurrentSplitName() : "";
+            Log.Debug($"Got current split: {liveSplitName}");
+        }
+        catch (Exception e) 
+        {
+            Log.Error("An error occurred getting split name:");
+            Log.Error(e.Message); 
+            return; 
+        }
+
         Log.Debug($"{liveSplitName}/{gameEvent.name}");
         if (SplitOn.StrictSplits && !liveSplitName.EndsWith(gameEvent.name)) { Log.Info($"GameEvent {gameEvent.name} was not expected event {liveSplitName}"); return; }
 
@@ -71,12 +86,12 @@ public class LiveSplitManager : IDisposable
 
     void DebugStartedHandler()
     {
-        Log.Debug("Run started Event!");
+        Log.Info("Run started Event!");
     }
 
     void DebugSplitHandler(SplitEventArgs obj)
     {
-        Log.Error($"Split occurred event {obj.ToString()}");
+        Log.Info($"Split occurred event {obj.ToString()}");
     }
 
     //static int cooldownSeconds = 1;
