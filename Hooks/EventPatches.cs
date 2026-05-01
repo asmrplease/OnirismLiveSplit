@@ -15,10 +15,10 @@ public static class PhoneTriggerWatcher
     }
 }
 
-[HarmonyPatch(typeof(SceneLoaderSvc), nameof(SceneLoaderSvc.LoadScene), [typeof(SceneConfig), typeof(SaveData)])]
+[HarmonyPatch(typeof(SceneLoaderSvc), nameof(SceneLoaderSvc.LoadLevel), [typeof(SceneConfig), typeof(bool), typeof(bool)])]
 public static class SceneSwitchPatch
 {
-    [HarmonyPrefix] public static void Prefix(SceneConfig sceneConfig) => GameEvents.NotifyExit(sceneConfig.sceneName);
+    [HarmonyPrefix] public static void Prefix(SceneConfig scene) => GameEvents.NotifyExit(scene.sceneName);
 }
 
 /// <summary>
